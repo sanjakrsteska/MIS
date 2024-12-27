@@ -36,7 +36,8 @@ class _RegisterPageState extends State<RegisterPage> {
           context: context,
           builder: (_) => AlertDialog(
             title: const Text("Email already in use"),
-            content: const Text("This email is already associated with another account."),
+            content: const Text(
+                "This email is already associated with another account."),
             actions: [
               TextButton(
                 onPressed: () {

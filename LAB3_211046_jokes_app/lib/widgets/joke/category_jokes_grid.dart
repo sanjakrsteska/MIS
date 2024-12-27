@@ -12,7 +12,6 @@ class CategoryJokesGrid extends StatefulWidget {
 }
 
 class _CategoryJokesGridState extends State<CategoryJokesGrid> {
-  // To track whether a joke is a favorite or not
   Map<String, bool> _favoriteStatus = {};
 
   Future<bool> _isFavorite(Joke joke) async {
@@ -45,21 +44,19 @@ class _CategoryJokesGridState extends State<CategoryJokesGrid> {
         final favoriteDoc = await docRef.get();
 
         if (favoriteDoc.exists) {
-          // Joke is already in favorites, so remove it
           await docRef.delete();
           setState(() {
-            _favoriteStatus[joke.id.toString()] = false; // Mark as not favorite
+            _favoriteStatus[joke.id.toString()] = false; 
           });
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joke removed from favorites')));
         } else {
-          // Joke is not in favorites, so add it
           await docRef.set({
             'setup': joke.setup,
             'punchline': joke.punchline,
             'type': joke.type,
           });
           setState(() {
-            _favoriteStatus[joke.id.toString()] = true; // Mark as favorite
+            _favoriteStatus[joke.id.toString()] = true; 
           });
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joke added to favorites')));
         }
@@ -129,7 +126,6 @@ class _CategoryJokesGridState extends State<CategoryJokesGrid> {
                           onPressed: () {},
                         );
                       } else {
-                        // Get favorite status from _favoriteStatus map or snapshot
                         bool isFavorite = _favoriteStatus[joke.id.toString()] ?? snapshot.data ?? false;
                         return IconButton(
                           icon: Icon(
