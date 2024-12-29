@@ -62,7 +62,13 @@ class _LoginPageState extends State<LoginScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Login'),
+        title: const Text(
+          'Login',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white70,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
