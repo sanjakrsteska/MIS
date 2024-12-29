@@ -20,6 +20,7 @@ class _ExamListMapScreenState extends State<ExamListMapScreen> {
   Position? currentPosition;
   late List<Exam> exams;
   List<LatLng> routePoints = [];
+  Exam? selectedExam;
 
   @override
   void initState() {
@@ -64,53 +65,122 @@ class _ExamListMapScreenState extends State<ExamListMapScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exam Locations'),
       ),
-      body: currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
-          : FlutterMap(
-        options: MapOptions(
-          center: LatLng(currentPosition!.latitude, currentPosition!.longitude),
-          zoom: 14,
-        ),
+      body: Stack(
         children: [
-          TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
-          ),
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: routePoints,
-                color: Colors.blue,
-                strokeWidth: 4.0,
+          if (currentPosition == null)
+            const Center(child: CircularProgressIndicator())
+          else
+            FlutterMap(
+              options: MapOptions(
+                center: LatLng(currentPosition!.latitude,
+                    currentPosition!.longitude),
+                zoom: 14,
               ),
-            ],
-          ),
-          MarkerLayer(
-            markers: [
-              for (var exam in exams)
-                Marker(
-                  point: LatLng(exam.latitude, exam.longitude),
-                  builder: (ctx) => GestureDetector(
-                    onTap: () => _getRoute(
-                        LatLng(exam.latitude, exam.longitude)),
-                    child: const Icon(Icons.location_on, color: Colors.red),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c'],
+                ),
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: routePoints,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
+                ),
+                MarkerLayer(
+                  markers: [
+                    for (var exam in exams)
+                      Marker(
+                        point: LatLng(exam.latitude, exam.longitude),
+                        builder: (ctx) => GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedExam = exam;
+                              routePoints = [];
+                            });
+                          },
+                          child: const Icon(Icons.location_on,
+                              color: Colors.red),
+                        ),
+                      ),
+                    if (currentPosition != null)
+                      Marker(
+                        point: LatLng(currentPosition!.latitude,
+                            currentPosition!.longitude),
+                        builder: (ctx) => const Icon(Icons.person_pin_circle,
+                            color: Colors.blue),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          if (selectedExam != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5.0,
+                      spreadRadius: 2.0,
+                    ),
+                  ],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16.0),
                   ),
                 ),
-              if (currentPosition != null)
-                Marker(
-                  point: LatLng(currentPosition!.latitude, currentPosition!.longitude),
-                  builder: (ctx) =>
-                  const Icon(Icons.person_pin_circle, color: Colors.blue),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      selectedExam!.course,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Location: ${selectedExam!.location}",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Time: ${selectedExam!.timestamp}",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.directions),
+                          label: const Text("Get Directions"),
+                          onPressed: () {
+                            _getRoute(LatLng(selectedExam!.latitude,
+                                selectedExam!.longitude));
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-            ],
-          ),
+              ),
+            ),
         ],
       ),
     );
