@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/models/movie_model.dart';
-import 'package:movie_app/services/favourite_movies_service.dart';
+import '../models/movie_model.dart';
+import '../services/favourite_movies_service.dart';
+import '../widgets/movie_details/movie_overview_widget.dart';
+import '../widgets/movie_details/movie_poster_widget.dart';
+import '../widgets/movie_details/movie_rating_widget.dart';
+import '../widgets/movie_details/movie_release_date_widget.dart';
+import '../widgets/movie_details/movie_title_widget.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -12,8 +17,7 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  final FavouriteMoviesService _favoritesService = FavouriteMoviesService
-    ();
+  final FavouriteMoviesService _favoritesService = FavouriteMoviesService();
   bool isFavorite = false;
 
   @override
@@ -62,63 +66,20 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Movie Poster
-            Container(
-              height: 300,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    widget.movie.backdropPath.isNotEmpty
-                        ? 'https://image.tmdb.org/t/p/w500${widget.movie.backdropPath}'
-                        : 'https://img.freepik.com/premium-vector/click-movie-logo-vector_18099-258.jpg?w=360',
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            MoviePoster(imageUrl: widget.movie.backdropPath),
             SizedBox(height: 16),
-            // Movie Details
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
-                  Text(
-                    widget.movie.title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  MovieTitle(title: widget.movie.title),
                   SizedBox(height: 8),
-                  // Release Date
-                  Text(
-                    "Release Date: ${widget.movie.releaseDate}",
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
+                  MovieReleaseDate(releaseDate: widget.movie.releaseDate),
                   SizedBox(height: 8),
-                  // Vote Average
-                  Text(
-                    "Rating: ${widget.movie.voteAverage.toStringAsFixed(1)} / 10",
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
+                  MovieRating(voteAverage: widget.movie.voteAverage),
                   SizedBox(height: 16),
-                  // Overview
-                  Text(
-                    "Overview",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    widget.movie.overview,
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
+                  MovieOverview(overview: widget.movie.overview),
                 ],
               ),
             ),
